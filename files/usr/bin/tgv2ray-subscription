@@ -1,11 +1,10 @@
 #!/bin/bash
-# TorGuard V2Ray subscription handler
-# Converts V2Ray subscription URLs to JSON for Sing-box
+# V2Ray subscription handler
+# Converts subscription data from a URL to JSON for Sing-box
 
 CONFIG_DIR="/etc/tgv2ray"
 SERVERS_FILE="$CONFIG_DIR/servers.json"
 CACHE_FILE="$CONFIG_DIR/subscription.cache"
-FALLBACK_FILE="$CONFIG_DIR/v2ray_default.conf"
 
 # Ensure config directory exists
 mkdir -p "$CONFIG_DIR"
@@ -197,48 +196,22 @@ EOF
 
 # Function to fetch and parse subscription
 fetch_subscription() {
-    local uuid="$1"
-    # Use the static API token, not the user's UUID
-    local api_url="https://torguard.net/tgv2ray.php?token=HukM6qmJfbCnprcjBChN25VjE"
-    
-    # For testing: simulate API failure
-    # local api_url="https://invalid-domain-that-does-not-exist.com/api"
-    
-    echo "Fetching subscription from TorGuard API..."
-    
-    # Download subscription
-    local response=$(curl -s -m 30 "$api_url" -H "User-Agent: TorGuard-V2Ray-Client/1.0" -H "Accept: text/plain")
-    
-    local using_fallback=0
-    if [ -z "$response" ] || [ "$response" = "[]" ] || [ "$response" = "{}" ]; then
-        echo "Error: Empty response from API, using fallback servers..."
-        
-        # Load fallback config
-        if [ -f "$FALLBACK_FILE" ]; then
-            # Replace FAKE-UUID-REPLACE-ME with actual UUID
-            response=$(sed "s/FAKE-UUID-REPLACE-ME/$uuid/g" "$FALLBACK_FILE")
-            using_fallback=1
-        else
-            echo "Error: No fallback config found"
-            return 1
-        fi
+    local url="$1"
+    echo "Fetching subscription from URL..."
+
+    local response=$(curl -L -s -m 30 "$url")
+    if [ -z "$response" ]; then
+        echo "Error: Empty response from subscription URL"
+        return 1
     fi
-    
-    # Try to decode as base64 (skip if using fallback)
-    local decoded="$response"
-    if [ "$using_fallback" -eq 0 ]; then
-        # API response is base64 encoded
-        decoded=$(echo "$response" | base64 -d 2>/dev/null)
-        if [ -z "$decoded" ]; then
-            echo "Error: Failed to decode API response"
-            return 1
-        fi
-        # Replace the fake UUID with the user's actual UUID
-        decoded=$(echo "$decoded" | sed "s/FAKEFAKE-FAKE-FAKE-FAKE-FAKEFAKEFAKE/$uuid/g")
+
+    local decoded=$(echo "$response" | base64 -d 2>/dev/null)
+    if [ $? -eq 0 ] && [ -n "$decoded" ]; then
+        response="$decoded"
     fi
-    
+
     # Save raw subscription for debugging
-    echo "$decoded" > "$CACHE_FILE"
+    echo "$response" > "$CACHE_FILE"
     
     # Parse each line as a proxy URL
     local servers="[]"
@@ -273,7 +246,7 @@ fetch_subscription() {
             fi
             ((count++))
         fi
-    done <<< "$decoded"
+    done <<< "$response"
     
     # Close JSON array if built manually
     if ! command -v jq >/dev/null 2>&1 && [ "$count" -gt 0 ]; then
@@ -311,14 +284,14 @@ update_uci_servers() {
 # Main command handler
 case "$1" in
     update)
-        # Get UUID from UCI
-        UUID=$(uci -q get tgv2ray.settings.uuid)
-        if [ -z "$UUID" ]; then
-            echo "Error: UUID not configured"
+        # Get subscription URL from UCI
+        SUB_URL=$(uci -q get tgv2ray.settings.subscription_url)
+        if [ -z "$SUB_URL" ]; then
+            echo "Error: subscription URL not configured"
             exit 1
         fi
-        
-        fetch_subscription "$UUID"
+
+        fetch_subscription "$SUB_URL"
         update_uci_servers
         ;;
     

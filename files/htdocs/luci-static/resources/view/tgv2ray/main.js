@@ -9,7 +9,7 @@ return view.extend({
     render: function() {
         var m, s, o;
 
-        m = new form.Map('tgv2ray', _('TorGuard V2Ray'), _('Manage TorGuard V2Ray connections using Sing-box'));
+        m = new form.Map('tgv2ray', _('V2Ray Client'), _('Manage V2Ray connections using a subscription URL with Sing-box'));
 
         s = m.section(form.TypedSection, 'tgv2ray', _('General Settings'));
         s.anonymous = true;
@@ -18,9 +18,8 @@ return view.extend({
         o = s.option(form.Flag, 'enabled', _('Enable'));
         o.default = '0';
 
-        o = s.option(form.Value, 'uuid', _('UUID'));
-        o.password = true;
-        o.placeholder = 'XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX';
+        o = s.option(form.Value, 'subscription_url', _('Subscription URL'));
+        o.placeholder = 'https://example.com/sub';
 
         o = s.option(form.ListValue, 'mode', _('Mode'));
         o.value('vpn', _('VPN (All Traffic)'));

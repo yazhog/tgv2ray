@@ -8,9 +8,8 @@ if [ ! -f /etc/config/tgv2ray ]; then
 	set tgv2ray.settings=tgv2ray
 	set tgv2ray.settings.enabled='0'
 	set tgv2ray.settings.mode='proxy'
-	set tgv2ray.settings.uuid=''
-	set tgv2ray.settings.subscription_url=''
-	set tgv2ray.settings.selected_server=''
+        set tgv2ray.settings.subscription_url=''
+        set tgv2ray.settings.server=''
 	set tgv2ray.settings.local_port='1080'
 	set tgv2ray.settings.http_port='8080'
 	set tgv2ray.settings.allow_lan='0'
