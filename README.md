@@ -1,4 +1,4 @@
-# 🚀 TorGuard V2Ray OpenWRT App (tgv2ray)
+# 🚀 V2Ray Subscription OpenWRT App (tgv2ray)
 
 <p align="center">
   <img src="https://img.shields.io/badge/OpenWRT-00B5E2?style=for-the-badge&logo=openwrt&logoColor=white" alt="OpenWRT">
@@ -6,13 +6,13 @@
   <img src="https://img.shields.io/badge/Sing--box-FF6B6B?style=for-the-badge&logo=box&logoColor=white" alt="Sing-box">
 </p>
 
-A lightweight LuCI-based OpenWRT application for managing V2Ray/VLESS/Trojan/Shadowsocks connections via TorGuard's subscription service, powered by Sing-box.
+A lightweight LuCI-based OpenWRT application for managing V2Ray/VLESS/Trojan/Shadowsocks connections via remote subscription links (e.g., from a RemnaWave panel), powered by Sing-box.
 
 ![TorGuard V2Ray OpenWRT Screenshot](https://github.com/torguardvpn/tgv2ray/blob/main/tgv2ray_screenshot.png?raw=true)
 
 ## ✨ Features
 
-- 🌐 **Server Subscription Management**: Automatically fetch and manage server lists from TorGuard API
+- 🌐 **Server Subscription Management**: Automatically fetch and manage server lists from a subscription URL
 - 🔐 **Multiple Protocol Support**: VLESS, VMess, Trojan, and Shadowsocks protocols
 - 🎭 **Dual Mode Operation**:
   - **Proxy Mode**: SOCKS5 (port 1080) and HTTP (port 8080) proxy
@@ -58,7 +58,7 @@ A lightweight LuCI-based OpenWRT application for managing V2Ray/VLESS/Trojan/Sha
 
 4. **Access the web interface**:
    - Navigate to `http://your-router-ip/cgi-bin/luci`
-   - Go to **Services → TorGuard V2Ray**
+   - Go to **Services → V2Ray Client**
 
 ## 🔨 Building from Source
 
@@ -102,8 +102,8 @@ A lightweight LuCI-based OpenWRT application for managing V2Ray/VLESS/Trojan/Sha
 1. **Enable the service**:
    - Check the "Enable V2Ray" checkbox
    
-2. **Add your TorGuard UUID**:
-   - Enter your TorGuard UUID in the UUID field
+2. **Add your subscription URL**:
+   - Enter the subscription link provided by your panel in the Subscription URL field
    - Click the **🔄** button to fetch available servers
 
 ### 🌐 Connection Modes
@@ -213,7 +213,7 @@ uci show tgv2ray
 # Common settings
 uci set tgv2ray.settings.enabled='1'        # Enable/disable service
 uci set tgv2ray.settings.mode='vpn'         # Mode: 'vpn' or 'proxy'
-uci set tgv2ray.settings.uuid='YOUR-UUID'   # TorGuard UUID
+uci set tgv2ray.settings.subscription_url='https://example.com/sub'   # Subscription link
 uci set tgv2ray.settings.server='US-LA'     # Selected server
 uci set tgv2ray.settings.log_level='info'   # Log level
 
@@ -280,7 +280,6 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 - [Sing-box](https://github.com/SagerNet/sing-box) - The powerful proxy platform
 - [OpenWRT](https://openwrt.org/) - The Linux operating system for embedded devices
-- [TorGuard](https://torguard.net/) - VPN service provider
 
 ---
 

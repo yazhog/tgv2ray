@@ -1,11 +1,11 @@
--- TorGuard V2Ray Configuration
+-- V2Ray configuration interface
 local uci = require("luci.model.uci").cursor()
 local sys = require("luci.sys")
 local fs = require("nixio.fs")
 local json = require("luci.jsonc")
 
 -- Create the model
-m = Map("tgv2ray", "TorGuard V2Ray", "Manage TorGuard V2Ray connections using Sing-box")
+m = Map("tgv2ray", "V2Ray Client", "Manage V2Ray connections from a subscription URL using Sing-box")
 
 -- Get current mode to determine if we should show proxy info
 local current_mode = uci:get("tgv2ray", "settings", "mode") or "vpn"
@@ -38,11 +38,10 @@ enabled = s:option(Flag, "enabled", "Enable V2Ray")
 enabled.default = "0"
 enabled.rmempty = false
 
--- UUID
-uuid = s:option(Value, "uuid", "UUID")
-uuid.password = true
-uuid.placeholder = "XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX"
-uuid.description = 'Find your TorGuard UUID in the <a href="https://torguard.net/proxynetwork/vmess.php" target="_blank">members area</a>'
+-- Subscription URL
+sub_url = s:option(Value, "subscription_url", "Subscription URL")
+sub_url.placeholder = "https://example.com/sub"
+sub_url.description = "Link to the RemnaWave subscription that provides server configurations"
 
 -- Mode
 mode = s:option(ListValue, "mode", "Mode")
@@ -146,7 +145,7 @@ function import.write(self, section)
                 table.insert(servers, new_server)
                 fs.writefile(servers_file, json.stringify(servers))
                 -- Update UCI with new server
-                uci:set("tgv2ray", "settings", "selected_server", new_server.tag)
+                uci:set("tgv2ray", "settings", "server", new_server.tag)
                 uci:commit("tgv2ray")
             end
         end
